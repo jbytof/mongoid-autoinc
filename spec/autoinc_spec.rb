@@ -181,6 +181,20 @@ describe "Mongoid::Autoinc" do
       end
     end
 
+    context "with seed as proc" do
+      describe "before create" do
+        let(:vehicle) { VehicleProc.new(:model => 'Coupe', seed: 10) }
+
+        it "should call the autoincrementor with the seed value" do
+          Mongoid::Autoinc::Incrementor.should_receive(:new).
+            with('VehicleProc', :vin, {seed: 11, auto: true}).
+            and_return(incrementor)
+
+          vehicle.save!
+        end
+      end
+    end
+
     context "with Integer step" do
       describe "before create" do
         let(:ticket) { Ticket.new }

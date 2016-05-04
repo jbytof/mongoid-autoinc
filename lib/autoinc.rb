@@ -46,7 +46,8 @@ module Mongoid
       options = options.dup
       model_name = (options.delete(:model_name) || self.class.model_name).to_s
       options[:scope] = evaluate_scope(options[:scope]) if options[:scope]
-      options[:step] = evaluate_step(options[:step]) if options[:step]
+      options[:step] = evaluate_option(:step, options[:step]) if options[:step]
+      options[:seed] = evaluate_option(:seed, options[:seed]) if options[:seed]
       write_attribute(
           field.to_sym, Mongoid::Autoinc::Incrementor.new(model_name, field, options).inc
       )
@@ -60,15 +61,15 @@ module Mongoid
       end
     end
 
-    def evaluate_step(step)
-      case step
-      when Integer then step
-      when Proc then evaluate_step_proc(step)
-      else raise 'step is not an Integer or a Proc'
+    def evaluate_option(option, value)
+      case value
+      when Integer then value
+      when Proc then evaluate_option_proc(value)
+      else raise '#{option} is not an Integer or a Proc'
       end
     end
 
-    def evaluate_step_proc(step_proc)
+    def evaluate_option_proc(step_proc)
       result = instance_exec &step_proc
       return result if result.is_a? Integer
       raise 'step Proc does not evaluate to an Integer'

@@ -60,6 +60,18 @@ class Vehicle
 
 end
 
+class VehicleProc
+  include Mongoid::Document
+  include Mongoid::Autoinc
+
+  field :seed, type: Integer, default: 0
+  field :model
+  field :vin
+
+  increments :vin, seed: lambda { seed + 1 }
+
+end
+
 class Ticket
   include Mongoid::Document
   include Mongoid::Autoinc
@@ -67,7 +79,7 @@ class Ticket
   field :number
 
   increments :number, step: 2
-  
+
 end
 
 class LotteryTicket
